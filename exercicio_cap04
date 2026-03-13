@@ -5,17 +5,19 @@ def obter_faixa_bpm(idade_anos: float) -> tuple[int, int]:
 
 	idade_dias = idade_anos * 365
 
-	if idade_dias <= 28:
-		return 100, 205
-	if idade_anos < 1:
-		return 100, 180
-	if idade_anos < 3:
-		return 98, 140
-	if idade_anos < 5:
-		return 80, 120
-	if idade_anos < 13:
-		return 75, 118
-	return 60, 100
+	match idade_anos:
+		case _ if idade_dias <= 28:
+			return 100, 205
+		case _ if idade_anos < 1:
+			return 100, 180
+		case _ if idade_anos < 3:
+			return 98, 140
+		case _ if idade_anos < 5:
+			return 80, 120
+		case _ if idade_anos < 13:
+			return 75, 118
+		case _:
+			return 60, 100
 
 
 def classificar_bpm(bpm: int, faixa_min: int, faixa_max: int) -> str:
@@ -33,28 +35,33 @@ def qualidade_batimentos(situacao: str) -> str:
 
 
 def normalizar_sexo(texto: str) -> str:
-	valor = texto.strip().lower()
-	if valor in {"m", "masculino", "homem"}:
-		return "M"
-	if valor in {"f", "feminino", "mulher"}:
-		return "F"
-	raise ValueError("Sexo invalido. Use M/F, masculino/feminino.")
+	match texto.strip().lower():
+		case "m" | "masculino" | "homem":
+			return "M"
+		case "f" | "feminino" | "mulher":
+			return "F"
+		case _:
+			raise ValueError("Sexo invalido. Use M/F, masculino/feminino.")
 
 
 def exibir_categoria(categoria: str) -> str:
-	if categoria == "Otima":
-		return "Ótima"
-	return categoria
+	match categoria:
+		case "Otima":
+			return "Ótima"
+		case _:
+			return categoria
 
 
 def obter_faixas_adulto_por_sexo(
 	sexo: str, idade_anos: float
 ) -> dict[str, tuple[int, int] | int] | None:
-	if sexo == "M":
-		return obter_faixa_homem_adulto(idade_anos)
-	if sexo == "F":
-		return obter_faixa_mulher_adulta(idade_anos)
-	return None
+	match sexo:
+		case "M":
+			return obter_faixa_homem_adulto(idade_anos)
+		case "F":
+			return obter_faixa_mulher_adulta(idade_anos)
+		case _:
+			return None
 
 
 def formatar_faixas_qualidade(faixas: dict[str, tuple[int, int] | int]) -> list[str]:
@@ -108,61 +115,63 @@ def ler_idade() -> float:
 
 
 def obter_faixa_homem_adulto(idade_anos: float) -> dict[str, tuple[int, int] | int] | None:
-	if 18 <= idade_anos <= 25:
-		return {
-			"Excelente": (56, 61),
-			"Otima": (62, 65),
-			"Boa": (66, 69),
-			"Normal": (70, 73),
-			"Menos boa": (74, 81),
-			"RuimAcima": 82,
-		}
-	if 26 <= idade_anos <= 35:
-		return {
-			"Excelente": (55, 61),
-			"Otima": (62, 65),
-			"Boa": (66, 70),
-			"Normal": (71, 74),
-			"Menos boa": (75, 81),
-			"RuimAcima": 82,
-		}
-	if 36 <= idade_anos <= 45:
-		return {
-			"Excelente": (57, 62),
-			"Otima": (63, 66),
-			"Boa": (67, 70),
-			"Normal": (71, 75),
-			"Menos boa": (76, 82),
-			"RuimAcima": 83,
-		}
-	if 46 <= idade_anos <= 55:
-		return {
-			"Excelente": (58, 63),
-			"Otima": (64, 67),
-			"Boa": (68, 71),
-			"Normal": (72, 76),
-			"Menos boa": (77, 83),
-			"RuimAcima": 84,
-		}
-	if 56 <= idade_anos <= 65:
-		return {
-			"Excelente": (57, 61),
-			"Otima": (62, 67),
-			"Boa": (68, 71),
-			"Normal": (72, 75),
-			"Menos boa": (76, 81),
-			"RuimAcima": 82,
-		}
-	if idade_anos > 65:
-		return {
-			"Excelente": (56, 61),
-			"Otima": (62, 65),
-			"Boa": (66, 69),
-			"Normal": (70, 73),
-			"Menos boa": (74, 79),
-			"RuimAcima": 80,
-		}
-	return None
+	match idade_anos:
+		case x if 18 <= x <= 25:
+			return {
+				"Excelente": (56, 61),
+				"Otima": (62, 65),
+				"Boa": (66, 69),
+				"Normal": (70, 73),
+				"Menos boa": (74, 81),
+				"RuimAcima": 82,
+			}
+		case x if 26 <= x <= 35:
+			return {
+				"Excelente": (55, 61),
+				"Otima": (62, 65),
+				"Boa": (66, 70),
+				"Normal": (71, 74),
+				"Menos boa": (75, 81),
+				"RuimAcima": 82,
+			}
+		case x if 36 <= x <= 45:
+			return {
+				"Excelente": (57, 62),
+				"Otima": (63, 66),
+				"Boa": (67, 70),
+				"Normal": (71, 75),
+				"Menos boa": (76, 82),
+				"RuimAcima": 83,
+			}
+		case x if 46 <= x <= 55:
+			return {
+				"Excelente": (58, 63),
+				"Otima": (64, 67),
+				"Boa": (68, 71),
+				"Normal": (72, 76),
+				"Menos boa": (77, 83),
+				"RuimAcima": 84,
+			}
+		case x if 56 <= x <= 65:
+			return {
+				"Excelente": (57, 61),
+				"Otima": (62, 67),
+				"Boa": (68, 71),
+				"Normal": (72, 75),
+				"Menos boa": (76, 81),
+				"RuimAcima": 82,
+			}
+		case x if x > 65:
+			return {
+				"Excelente": (56, 61),
+				"Otima": (62, 65),
+				"Boa": (66, 69),
+				"Normal": (70, 73),
+				"Menos boa": (74, 79),
+				"RuimAcima": 80,
+			}
+		case _:
+			return None
 
 
 def classificar_homem_adulto(idade_anos: float, bpm: int) -> str | None:
@@ -183,61 +192,63 @@ def classificar_homem_adulto(idade_anos: float, bpm: int) -> str | None:
 
 
 def obter_faixa_mulher_adulta(idade_anos: float) -> dict[str, tuple[int, int] | int] | None:
-	if 18 <= idade_anos <= 25:
-		return {
-			"Excelente": (61, 65),
-			"Otima": (66, 69),
-			"Boa": (70, 73),
-			"Normal": (74, 78),
-			"Menos boa": (79, 84),
-			"RuimAcima": 85,
-		}
-	if 26 <= idade_anos <= 35:
-		return {
-			"Excelente": (60, 64),
-			"Otima": (65, 68),
-			"Boa": (69, 72),
-			"Normal": (73, 76),
-			"Menos boa": (77, 82),
-			"RuimAcima": 83,
-		}
-	if 36 <= idade_anos <= 45:
-		return {
-			"Excelente": (60, 64),
-			"Otima": (65, 69),
-			"Boa": (70, 73),
-			"Normal": (74, 78),
-			"Menos boa": (79, 84),
-			"RuimAcima": 85,
-		}
-	if 46 <= idade_anos <= 55:
-		return {
-			"Excelente": (61, 65),
-			"Otima": (66, 69),
-			"Boa": (70, 73),
-			"Normal": (74, 77),
-			"Menos boa": (78, 83),
-			"RuimAcima": 84,
-		}
-	if 56 <= idade_anos <= 65:
-		return {
-			"Excelente": (60, 64),
-			"Otima": (65, 68),
-			"Boa": (69, 73),
-			"Normal": (74, 77),
-			"Menos boa": (78, 83),
-			"RuimAcima": 84,
-		}
-	if idade_anos > 65:
-		return {
-			"Excelente": (60, 64),
-			"Otima": (65, 68),
-			"Boa": (69, 72),
-			"Normal": (73, 76),
-			"Menos boa": (77, 84),
-			"RuimAcima": 84,
-		}
-	return None
+	match idade_anos:
+		case x if 18 <= x <= 25:
+			return {
+				"Excelente": (61, 65),
+				"Otima": (66, 69),
+				"Boa": (70, 73),
+				"Normal": (74, 78),
+				"Menos boa": (79, 84),
+				"RuimAcima": 85,
+			}
+		case x if 26 <= x <= 35:
+			return {
+				"Excelente": (60, 64),
+				"Otima": (65, 68),
+				"Boa": (69, 72),
+				"Normal": (73, 76),
+				"Menos boa": (77, 82),
+				"RuimAcima": 83,
+			}
+		case x if 36 <= x <= 45:
+			return {
+				"Excelente": (60, 64),
+				"Otima": (65, 69),
+				"Boa": (70, 73),
+				"Normal": (74, 78),
+				"Menos boa": (79, 84),
+				"RuimAcima": 85,
+			}
+		case x if 46 <= x <= 55:
+			return {
+				"Excelente": (61, 65),
+				"Otima": (66, 69),
+				"Boa": (70, 73),
+				"Normal": (74, 77),
+				"Menos boa": (78, 83),
+				"RuimAcima": 84,
+			}
+		case x if 56 <= x <= 65:
+			return {
+				"Excelente": (60, 64),
+				"Otima": (65, 68),
+				"Boa": (69, 73),
+				"Normal": (74, 77),
+				"Menos boa": (78, 83),
+				"RuimAcima": 84,
+			}
+		case x if x > 65:
+			return {
+				"Excelente": (60, 64),
+				"Otima": (65, 68),
+				"Boa": (69, 72),
+				"Normal": (73, 76),
+				"Menos boa": (77, 84),
+				"RuimAcima": 84,
+			}
+		case _:
+			return None
 
 
 def classificar_mulher_adulta(idade_anos: float, bpm: int) -> str | None:
