@@ -1,0 +1,297 @@
+def obter_faixa_bpm(idade_anos: float) -> tuple[int, int]:
+	"""Retorna a faixa de BPM adequada para a idade informada."""
+	if idade_anos < 0:
+		raise ValueError("A idade nao pode ser negativa.")
+
+	idade_dias = idade_anos * 365
+
+	if idade_dias <= 28:
+		return 100, 205
+	if idade_anos < 1:
+		return 100, 180
+	if idade_anos < 3:
+		return 98, 140
+	if idade_anos < 5:
+		return 80, 120
+	if idade_anos < 13:
+		return 75, 118
+	return 60, 100
+
+
+def classificar_bpm(bpm: int, faixa_min: int, faixa_max: int) -> str:
+	if bpm < faixa_min:
+		return "ABAIXO da faixa adequada"
+	if bpm > faixa_max:
+		return "ACIMA da faixa adequada"
+	return "DENTRO da faixa adequada"
+
+
+def qualidade_batimentos(situacao: str) -> str:
+	if situacao.startswith("DENTRO"):
+		return "Normal"
+	return "Ruim"
+
+
+def normalizar_sexo(texto: str) -> str:
+	valor = texto.strip().lower()
+	if valor in {"m", "masculino", "homem"}:
+		return "M"
+	if valor in {"f", "feminino", "mulher"}:
+		return "F"
+	raise ValueError("Sexo invalido. Use M/F, masculino/feminino.")
+
+
+def exibir_categoria(categoria: str) -> str:
+	if categoria == "Otima":
+		return "Ótima"
+	return categoria
+
+
+def obter_faixas_adulto_por_sexo(
+	sexo: str, idade_anos: float
+) -> dict[str, tuple[int, int] | int] | None:
+	if sexo == "M":
+		return obter_faixa_homem_adulto(idade_anos)
+	if sexo == "F":
+		return obter_faixa_mulher_adulta(idade_anos)
+	return None
+
+
+def formatar_faixas_qualidade(faixas: dict[str, tuple[int, int] | int]) -> list[str]:
+	linhas: list[str] = []
+	for categoria in ["Excelente", "Otima", "Boa", "Normal", "Menos boa"]:
+		limites = faixas[categoria]
+		if isinstance(limites, tuple):
+			linhas.append(
+				f"{exibir_categoria(categoria)}: {limites[0]} - {limites[1]} bpm"
+			)
+
+	ruim_acima = faixas.get("RuimAcima")
+	if isinstance(ruim_acima, int):
+		linhas.append(f"Ruim: >= {ruim_acima} bpm")
+
+	return linhas
+
+
+def ler_bpm() -> int:
+	while True:
+		try:
+			bpm = int(input("Informe seus batimentos por minuto (BPM): ").strip())
+			if bpm <= 0:
+				print("Valor de BPM invalido. Informe um numero inteiro positivo.")
+				continue
+			return bpm
+		except ValueError:
+			print("Entrada invalida para BPM. Digite apenas numeros inteiros.")
+
+
+def ler_sexo() -> str:
+	while True:
+		try:
+			return normalizar_sexo(input("Informe seu sexo (M/F): "))
+		except ValueError:
+			print("Sexo invalido. Use M/F, masculino/feminino.")
+
+
+def ler_idade() -> float:
+	while True:
+		try:
+			idade = float(
+				input("Informe sua idade em anos (use decimal para meses/dias): ").strip()
+			)
+			if idade < 0:
+				print("Idade invalida. Informe um valor igual ou maior que zero.")
+				continue
+			return idade
+		except ValueError:
+			print("Entrada invalida para idade. Digite apenas numeros.")
+
+
+def obter_faixa_homem_adulto(idade_anos: float) -> dict[str, tuple[int, int] | int] | None:
+	if 18 <= idade_anos <= 25:
+		return {
+			"Excelente": (56, 61),
+			"Otima": (62, 65),
+			"Boa": (66, 69),
+			"Normal": (70, 73),
+			"Menos boa": (74, 81),
+			"RuimAcima": 82,
+		}
+	if 26 <= idade_anos <= 35:
+		return {
+			"Excelente": (55, 61),
+			"Otima": (62, 65),
+			"Boa": (66, 70),
+			"Normal": (71, 74),
+			"Menos boa": (75, 81),
+			"RuimAcima": 82,
+		}
+	if 36 <= idade_anos <= 45:
+		return {
+			"Excelente": (57, 62),
+			"Otima": (63, 66),
+			"Boa": (67, 70),
+			"Normal": (71, 75),
+			"Menos boa": (76, 82),
+			"RuimAcima": 83,
+		}
+	if 46 <= idade_anos <= 55:
+		return {
+			"Excelente": (58, 63),
+			"Otima": (64, 67),
+			"Boa": (68, 71),
+			"Normal": (72, 76),
+			"Menos boa": (77, 83),
+			"RuimAcima": 84,
+		}
+	if 56 <= idade_anos <= 65:
+		return {
+			"Excelente": (57, 61),
+			"Otima": (62, 67),
+			"Boa": (68, 71),
+			"Normal": (72, 75),
+			"Menos boa": (76, 81),
+			"RuimAcima": 82,
+		}
+	if idade_anos > 65:
+		return {
+			"Excelente": (56, 61),
+			"Otima": (62, 65),
+			"Boa": (66, 69),
+			"Normal": (70, 73),
+			"Menos boa": (74, 79),
+			"RuimAcima": 80,
+		}
+	return None
+
+
+def classificar_homem_adulto(idade_anos: float, bpm: int) -> str | None:
+	faixas = obter_faixa_homem_adulto(idade_anos)
+	if not faixas:
+		return None
+
+	for categoria in ["Excelente", "Otima", "Boa", "Normal", "Menos boa"]:
+		limites = faixas[categoria]
+		if isinstance(limites, tuple) and limites[0] <= bpm <= limites[1]:
+			return categoria
+
+	ruim_acima = faixas["RuimAcima"]
+	if isinstance(ruim_acima, int) and bpm >= ruim_acima:
+		return "Ruim"
+
+	return "Abaixo da faixa de Excelente"
+
+
+def obter_faixa_mulher_adulta(idade_anos: float) -> dict[str, tuple[int, int] | int] | None:
+	if 18 <= idade_anos <= 25:
+		return {
+			"Excelente": (61, 65),
+			"Otima": (66, 69),
+			"Boa": (70, 73),
+			"Normal": (74, 78),
+			"Menos boa": (79, 84),
+			"RuimAcima": 85,
+		}
+	if 26 <= idade_anos <= 35:
+		return {
+			"Excelente": (60, 64),
+			"Otima": (65, 68),
+			"Boa": (69, 72),
+			"Normal": (73, 76),
+			"Menos boa": (77, 82),
+			"RuimAcima": 83,
+		}
+	if 36 <= idade_anos <= 45:
+		return {
+			"Excelente": (60, 64),
+			"Otima": (65, 69),
+			"Boa": (70, 73),
+			"Normal": (74, 78),
+			"Menos boa": (79, 84),
+			"RuimAcima": 85,
+		}
+	if 46 <= idade_anos <= 55:
+		return {
+			"Excelente": (61, 65),
+			"Otima": (66, 69),
+			"Boa": (70, 73),
+			"Normal": (74, 77),
+			"Menos boa": (78, 83),
+			"RuimAcima": 84,
+		}
+	if 56 <= idade_anos <= 65:
+		return {
+			"Excelente": (60, 64),
+			"Otima": (65, 68),
+			"Boa": (69, 73),
+			"Normal": (74, 77),
+			"Menos boa": (78, 83),
+			"RuimAcima": 84,
+		}
+	if idade_anos > 65:
+		return {
+			"Excelente": (60, 64),
+			"Otima": (65, 68),
+			"Boa": (69, 72),
+			"Normal": (73, 76),
+			"Menos boa": (77, 84),
+			"RuimAcima": 84,
+		}
+	return None
+
+
+def classificar_mulher_adulta(idade_anos: float, bpm: int) -> str | None:
+	faixas = obter_faixa_mulher_adulta(idade_anos)
+	if not faixas:
+		return None
+
+	for categoria in ["Excelente", "Otima", "Boa", "Normal", "Menos boa"]:
+		limites = faixas[categoria]
+		if isinstance(limites, tuple) and limites[0] <= bpm <= limites[1]:
+			return categoria
+
+	ruim_acima = faixas["RuimAcima"]
+	if isinstance(ruim_acima, int) and bpm >= ruim_acima:
+		return "Ruim"
+
+	return "Abaixo da faixa de Excelente"
+
+
+def main() -> None:
+	bpm = ler_bpm()
+	sexo = ler_sexo()
+	idade = ler_idade()
+
+	faixa_min, faixa_max = obter_faixa_bpm(idade)
+	situacao = classificar_bpm(bpm, faixa_min, faixa_max)
+	qualidade = qualidade_batimentos(situacao)
+
+	if sexo == "M" and idade >= 18:
+		if bpm < faixa_min or bpm > faixa_max:
+			qualidade = "Ruim"
+		else:
+			qualidade_homem = classificar_homem_adulto(idade, bpm)
+			if qualidade_homem:
+				qualidade = qualidade_homem
+	if sexo == "F" and idade >= 18:
+		if bpm < faixa_min or bpm > faixa_max:
+			qualidade = "Ruim"
+		else:
+			qualidade_mulher = classificar_mulher_adulta(idade, bpm)
+			if qualidade_mulher:
+				qualidade = qualidade_mulher
+
+	faixas_adulto = obter_faixas_adulto_por_sexo(sexo, idade)
+	if idade >= 18 and faixas_adulto:
+		print("Batimentos esperados para sua idade:")
+		for linha in formatar_faixas_qualidade(faixas_adulto):
+			print(f"- {linha}")
+	else:
+		print(f"Batimentos esperados para sua idade: {faixa_min} - {faixa_max} bpm.")
+	print(f"Seu resultado: {situacao}.")
+	print(f"Qualidade dos batimentos: {exibir_categoria(qualidade)}.")
+	print("Classificacoes: Excelente, Otima, Boa, Normal, Menos boa, Ruim.")
+
+
+if __name__ == "__main__":
+	main()
