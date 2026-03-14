@@ -1,41 +1,31 @@
-OPCOES_VALIDAS = ("PLAYSTATION", "XBOX", "NINTENDO")
-TOTAL_MEMBROS = 5
+from collections import Counter
 
 
-def ler_voto(numero_membro: int) -> str:
-    while True:
-        voto = input(
-            f"Digite o voto do membro {numero_membro} "
-            f"({', '.join(OPCOES_VALIDAS)}): "
-        ).strip().upper()
-
-        if voto in OPCOES_VALIDAS:
-            return voto
-
-        print("Voto invalido. Escolha apenas: PLAYSTATION, XBOX ou NINTENDO.")
+OPCOES = ("PLAYSTATION", "XBOX", "NINTENDO")
 
 
 def main() -> None:
-    votos = {opcao: 0 for opcao in OPCOES_VALIDAS}
+    votos: list[str] = []
 
-    for membro in range(1, TOTAL_MEMBROS + 1):
-        voto = ler_voto(membro)
-        votos[voto] += 1
+    for i in range(1, 6):
+        while True:
+            voto = input(f"Voto {i} ({', '.join(OPCOES)}): ").strip().upper()
+            if voto in OPCOES:
+                votos.append(voto)
+                break
+            print("Voto invalido. Use: PLAYSTATION, XBOX ou NINTENDO.")
 
-    maior_quantidade = max(votos.values())
-    vencedores = [console for console, qtd in votos.items() if qtd == maior_quantidade]
+    contagem: Counter[str] = Counter(votos)
+    maior = max(contagem.values())
+    vencedores: list[str] = [console for console, qtd in contagem.items() if qtd == maior]
 
     print("\n--- RESULTADO FINAL ---")
-
     if len(vencedores) == 1:
-        console_escolhido = vencedores[0]
-        print(f"Console escolhido: {console_escolhido}")
-        print(f"Quantidade de votos: {maior_quantidade}")
-        return
-
-    print("Empate entre os consoles:")
-    for console in vencedores:
-        print(f"- {console}: {maior_quantidade} votos")
+        print(f"Console escolhido: {vencedores[0]}")
+        print(f"Quantidade de votos: {maior}")
+    else:
+        print("Empate entre:", ", ".join(vencedores))
+        print(f"Quantidade de votos: {maior}")
 
 
 if __name__ == "__main__":
